@@ -1,0 +1,95 @@
+---
+title: "Clustering"
+author: "Zach Kontor"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(MASS)
+library(FactoMineR)
+library(factoextra)
+library(gridExtra)
+
+setwd("C:/Users/Zach/Desktop/School/ISQS 6350 MVA")
+data <- read.csv("MVA_Data.csv")
+data2 <- subset(data,select = -c(Occupation_Sales.Representative,Quality.of.Sleep_4,Occupation_Manager))
+DataScaled <- scale(data)
+for(col in names(data2)) {
+  # Get unique values in the column (removing any NAs)
+  unique_vals <- unique(data2[[col]])
+  unique_vals <- unique_vals[!is.na(unique_vals)]
+  
+  # Check if the column is numeric and has exactly two unique values: 0 and 1 to convert to factor type for FAMD
+  if(is.numeric(data2[[col]]) && length(unique_vals) == 2 && all(unique_vals %in% c(0, 1))) {
+    data2[[col]] <- as.factor(data2[[col]])
+    cat("Converted", col, "to factor.\n")
+  }
+}
+
+```
+## Categorical Variables Contribution
+```{r}
+res.famd <- FAMD(data2, graph=FALSE)
+eig.Vals <- get_eigenvalue(res.famd)
+eig.Vals
+# After examining the cumulative variance we can see that five dimensions can explain 60% of the variance
+ScreePlot1 <- fviz_screeplot(res.famd)
+ScreePlot1
+
+## Getting varis from FAMD
+var <- get_famd_var(res.famd)
+head(var$coord)
+#Vari Contributions to each dimension
+head(var$contrib)
+
+#Plots
+FigVAR <- fviz_famd_var(res.famd, repel = TRUE)
+#contribution plots in accordance w dimensions
+FigContrib1 <- fviz_contrib(res.famd, "var", axes = 1)
+FigContrib2 <- fviz_contrib(res.famd, "var", axes = 2)
+FigContrib3 <- fviz_contrib(res.famd, "var", axes = 3)
+FigContrib4 <- fviz_contrib(res.famd, "var", axes = 4)
+FigContrib5 <- fviz_contrib(res.famd, "var", axes = 5)
+#Plots for categorical variable contribution to dimensions. 
+FigContrib1
+FigContrib2
+FigContrib3
+FigContrib4
+FigContrib5
+```
+
+## Quantitative Variables Contribution
+
+```{r}
+QuanVari1 <- fviz_famd_var(res.famd, "quanti.var", col.var = "contrib", 
+             gradient.cols = c("GREEN", "BLUE", "RED"),
+             repel = TRUE)
+QuanVari1
+
+QuanVari2 <- fviz_famd_var(res.famd, "quanti.var", axes = c(2, 3),
+                           col.var = "contrib", 
+                           gradient.cols = c("GREEN", "BLUE", "RED"),
+                           repel = TRUE)
+QuanVari2
+
+
+QuanVari3 <- fviz_famd_var(res.famd, "quanti.var", axes = c(3, 4),
+                           col.var = "contrib", 
+                           gradient.cols = c("GREEN", "BLUE", "RED"),
+                           repel = TRUE)
+QuanVari3
+
+QuanVari4 <- fviz_famd_var(res.famd, "quanti.var", axes = c(4, 5),
+                           col.var = "contrib", 
+                           gradient.cols = c("GREEN", "BLUE", "RED"),
+                           repel = TRUE)
+QuanVari4
+
+```
