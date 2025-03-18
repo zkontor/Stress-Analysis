@@ -1,8 +1,8 @@
 ---
-title: "Clustering"
 author: "Zach Kontor"
+title: "Clustering"
 date: "`r Sys.Date()`"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -17,8 +17,8 @@ library(FactoMineR)
 library(factoextra)
 library(gridExtra)
 
-setwd("C:/Users/Zach/Desktop/School/ISQS 6350 MVA")
-data <- read.csv("MVA_Data.csv")
+setwd("C:/Users/Zach/Documents/GitHub/Stress-Analysis")
+data <- read.csv("StressData.csv")
 data2 <- subset(data,select = -c(Occupation_Sales.Representative,Quality.of.Sleep_4,Occupation_Manager))
 DataScaled <- scale(data)
 for(col in names(data2)) {
